@@ -1,0 +1,13 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "YBnQIMr/fl0qBrZEXyD8FelYo/0=",
+			"path": "github.com/monochromegane/slack-incoming-webhooks",
+			"revision": "86d1b9ab9a9450c03e86cbe9ee2d0f1bb2de3bbf",
+			"revisionTime": "2016-12-22T05:15:09Z"
+		}
+	],
+	"rootPath": "github.com/ara-ta3/reviewer-notification"
+}
