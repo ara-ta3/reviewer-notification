@@ -5,5 +5,10 @@
 	"Packages": [
 		"./..."
 	],
-	"Deps": []
+	"Deps": [
+		{
+			"ImportPath": "github.com/monochromegane/slack-incoming-webhooks",
+			"Rev": "86d1b9ab9a9450c03e86cbe9ee2d0f1bb2de3bbf"
+		}
+	]
 }
