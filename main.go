@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/ara-ta3/reviewer-notification/github"
 	"github.com/ara-ta3/reviewer-notification/slack"
@@ -12,22 +13,21 @@ import (
 
 var logger = log.New(os.Stdout, "", log.Ldate+log.Ltime+log.Lshortfile)
 
-// func readRequestBody() {
-//     body, _ := ioutil.ReadAll(resp.Body)
-//     defer resp.Body.Close()
-//     r := response{}
-//     json.Unmarshal(body, &r)
-//     c := 0
-// }
-
 func main() {
-	n := ReviewerNotification{
-		s: slack.SlackClient{
-			token: "",
+	u := os.Getenv("SLACK_WEBHOOK_URL")
+	token := os.Getenv("TOKEN")
+	labels := strings.Split(os.Getenv("TARGET_LABELS"), ",")
+
+	h := GithubNotificationHandler{
+		n: ReviewerNotification{
+			s: slack.SlackClient{
+				WebhookURL: u,
+			},
+			token:  token,
+			labels: labels,
+			logger: *logger,
 		},
-		logger: *logger,
 	}
-	h := GithubNotificationHandler{n: n}
 	http.Handle("/", h)
 	http.ListenAndServe(":8080", nil)
 }
@@ -38,7 +38,7 @@ type GithubNotificationHandler struct {
 
 func (h GithubNotificationHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
-	g := GithubEvent{}
+	g := github.GithubEvent{}
 	e := h.n.Notify(g)
 	if e != nil {
 		fmt.Println(e)
@@ -48,6 +48,8 @@ func (h GithubNotificationHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
 
 type ReviewerNotification struct {
 	s      slack.SlackClient
+	token  string
+	labels []string
 	logger log.Logger
 }
 

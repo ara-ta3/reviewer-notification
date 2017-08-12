@@ -1,7 +1,7 @@
 package slack
 
 type SlackClient struct {
-	token string
+	WebhookURL string
 }
 
 func (s SlackClient) Send(reviewer, message string) error {
