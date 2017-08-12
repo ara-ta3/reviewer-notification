@@ -1,0 +1,22 @@
+{
+    "name": "Reviewer Notification",
+    "description": "",
+    "repository": "https://github.com/ara-ta3/reviewer-notification",
+    "env": {
+        "SLACK_WEBHOOK_URL": {
+            "description": "Send Notification",
+            "required": true
+        },
+        "TARGET_LABELS": {
+            "description": "Comma separated label name.",
+            "required": true
+        },
+        "ACCOUNT_MAP": {
+            "description": ""
+        },
+        "SLACK_CHANNEL": {
+            "description": "Post to. #ABC",
+            "required": true
+        }
+    }
+}
