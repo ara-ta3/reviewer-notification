@@ -15,7 +15,7 @@ func (h GithubNotificationHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
 	if e == nil {
 		w.WriteHeader(http.StatusNoContent)
 	} else {
-		h.Logger.Printf("%#v\n", e)
+		h.Logger.Printf("%+v\n", e)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 }

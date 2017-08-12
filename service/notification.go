@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -45,7 +46,6 @@ func (n ReviewerNotification) NotifyWithRequestBody(body io.ReadCloser) error {
 	if err != nil {
 		return err
 	}
-	n.logger.Printf("%#v\n", g)
 	return n.Notify(g)
 }
 
@@ -59,7 +59,9 @@ func (n ReviewerNotification) Notify(g *github.GithubEvent) error {
 	}
 	as := g.GetAssigneeNames()
 	replaced := n.replaceAccountName(as)
-	return n.s.Send(replaced, g.Issue.Title, "Review Request!!")
+
+	t := fmt.Sprintf("<%s|%s>", g.Issue.HTMLURL, g.Issue.Title)
+	return n.s.Send(replaced, t, "Review Request!!")
 }
 
 func (n ReviewerNotification) replaceAccountName(ns []string) []string {
