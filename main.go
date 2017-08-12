@@ -17,6 +17,11 @@ func main() {
 	u := os.Getenv("SLACK_WEBHOOK_URL")
 	token := os.Getenv("TOKEN")
 	labels := strings.Split(os.Getenv("TARGET_LABELS"), ",")
+	p := os.Getenv("PORT")
+	if p == "" {
+		p = "80"
+	}
+	port := fmt.Sprintf(":%s", p)
 
 	h := GithubNotificationHandler{
 		n: ReviewerNotification{
@@ -29,7 +34,7 @@ func main() {
 		},
 	}
 	http.Handle("/", h)
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(port, nil)
 }
 
 type GithubNotificationHandler struct {
