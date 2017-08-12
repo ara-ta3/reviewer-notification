@@ -17,9 +17,6 @@ url=http://$(host):$(port)/$(path)
 run/binary: build_for_local
 	./$(out)
 
-run/heroku:
-	$(HEROKU) local
-
 run:
 	env SLACK_WEBHOOK_URL=$(slack_webhook_url) \
 		TOKEN=$(auth_token) \
