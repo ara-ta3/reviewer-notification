@@ -30,10 +30,7 @@ func main() {
 
 	h := service.GithubNotificationHandler{
 		NotificationService: service.NewReviewerNotification(
-			slack.SlackClient{
-				WebhookURL: u,
-				PostTo:     slackChannel,
-			},
+			slack.NewSlackClient(u, slackChannel),
 			token,
 			labels,
 			logger,

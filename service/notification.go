@@ -58,8 +58,21 @@ func (n ReviewerNotification) Notify(g *github.GithubEvent) error {
 		return nil
 	}
 	as := g.GetAssigneeNames()
-	message := "Review Request!!"
-	return n.s.Send(as, message)
+	replaced := n.replaceAccountName(as)
+	return n.s.Send(replaced, g.Issue.Title, "Review Request!!")
+}
+
+func (n ReviewerNotification) replaceAccountName(ns []string) []string {
+	ss := []string{}
+	for _, x := range ns {
+		r, ok := n.accountMap[x]
+		if ok {
+			ss = append(ss, r)
+		} else {
+			ss = append(ss, x)
+		}
+	}
+	return ss
 }
 
 func (n ReviewerNotification) hasTargetLabel(labels []github.Label) bool {
