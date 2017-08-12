@@ -4,6 +4,9 @@ slack_webhook_url=http://localhost
 auth_token=token
 labels=S-awaiting-review
 port=8080
+host=localhost
+path=
+url=http://$(host):$(port)/$(path)
 
 run:
 	env SLACK_WEBHOOK_URL=$(slack_webhook_url) \
@@ -16,7 +19,7 @@ vendor/save: $(GODEP)
 	$(GODEP) save ./...
 
 curl:
-	curl -i localhost:$(port)
+	curl -i $(url)
 
 deploy:
 	git push heroku master 

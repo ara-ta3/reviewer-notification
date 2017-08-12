@@ -1,7 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -24,7 +27,7 @@ func main() {
 	port := fmt.Sprintf(":%s", p)
 
 	h := GithubNotificationHandler{
-		n: ReviewerNotification{
+		NotificationService: ReviewerNotification{
 			s: slack.SlackClient{
 				WebhookURL: u,
 			},
@@ -38,15 +41,14 @@ func main() {
 }
 
 type GithubNotificationHandler struct {
-	n ReviewerNotification
+	NotificationService ReviewerNotification
 }
 
 func (h GithubNotificationHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
-	g := github.GithubEvent{}
-	e := h.n.Notify(g)
+	e := h.NotificationService.NotifyWithRequestBody(r.Body)
 	if e != nil {
-		fmt.Println(e)
+		logger.Printf("%#v\n", e)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 }
@@ -58,12 +60,25 @@ type ReviewerNotification struct {
 	logger log.Logger
 }
 
-func (n ReviewerNotification) Notify(g github.GithubEvent) error {
+func (n ReviewerNotification) NotifyWithRequestBody(body io.ReadCloser) error {
+	bs, err := ioutil.ReadAll(body)
+	if err != nil {
+		return err
+	}
+	g := new(github.GithubEvent)
+	err = json.Unmarshal(bs, g)
+	if err != nil {
+		return err
+	}
+	n.logger.Printf("%#v\n", g)
+	return n.Notify(g)
+}
+
+func (n ReviewerNotification) Notify(g *github.GithubEvent) error {
 	n.logger.Printf("Action: %s\n", g.Action)
 	if g.Action != "labeled" {
 		return nil
 	}
-	n.logger.Printf("%#v", g.Issue.Assignee)
 	r := "ara-ta3"
 	message := "hogehoge"
 	return n.s.Send(r, message)
