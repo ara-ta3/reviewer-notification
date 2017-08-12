@@ -46,6 +46,9 @@ func parseAccountMap(s string) map[string]string {
 	ms := strings.Split(s, ",")
 	r := map[string]string{}
 	for _, m := range ms {
+		if m == "" {
+			continue
+		}
 		x := strings.Split(m, ":")
 		r[x[0]] = x[1]
 	}

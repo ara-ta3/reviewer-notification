@@ -1,5 +1,9 @@
-GODEP=$(shell go env GOPATH)/bin/godep
+GOVENDOR=$(shell go env GOPATH)/bin/govendor
 HEROKU=$(shell which heroku)
+goos_opt=GOOS=$(GOOS)
+goarch_opt=GOARCH=$(GOARCH)
+out=reviewer-notification
+out_opt="-o $(out)"
 slack_webhook_url=http://localhost
 auth_token=token
 labels=S-awaiting-review
@@ -10,6 +14,12 @@ host=localhost
 path=
 url=http://$(host):$(port)/$(path)
 
+run/binary: build_for_local
+	./$(out)
+
+run/heroku:
+	$(HEROKU) local
+
 run:
 	env SLACK_WEBHOOK_URL=$(slack_webhook_url) \
 		TOKEN=$(auth_token) \
@@ -19,8 +29,9 @@ run:
 		PORT=$(port) \
 		go run main.go
 
-vendor/save: $(GODEP)
-	$(GODEP) save ./...
+dep=
+vendor/fetch: $(GOVENDOR)
+	$(GOVENDOR) fetch $(dep)
 
 curl:
 	curl -i $(url)
@@ -28,11 +39,20 @@ curl:
 curl/post:
 	curl -i $(url) -d '$(shell cat ./sample.json)' -X POST
 
+build:
+	$(goos_opt) $(goarch_opt) go build $(out_opt)
+
+build_for_linux:
+	$(MAKE) build GOOS=linux GOARCH=amd64 out_opt=""
+
+build_for_local:
+	$(MAKE) build goos_opt= goarch_opt= out_opt=
+
 deploy:
 	git push heroku master 
 
 open: 
 	$(HEROKU) open
 
-$(GODEP):
-	go get -u github.com/tools/godep
+$(GOVENDOR):
+	go get -u github.com/kardianos/govendor
