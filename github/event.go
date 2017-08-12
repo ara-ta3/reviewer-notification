@@ -36,16 +36,11 @@ type GithubEvent struct {
 			Type              string `json:"type"`
 			SiteAdmin         bool   `json:"site_admin"`
 		} `json:"user"`
-		Labels []struct {
-			ID      int    `json:"id"`
-			URL     string `json:"url"`
-			Name    string `json:"name"`
-			Color   string `json:"color"`
-			Default bool   `json:"default"`
-		} `json:"labels"`
+		Labels    []Label     `json:"labels"`
 		State     string      `json:"state"`
 		Locked    bool        `json:"locked"`
-		Assignee  interface{} `json:"assignee"`
+		Assignee  assignee    `json:"assignee"`
+		Assignees []assignee  `json:"assignees"`
 		Milestone interface{} `json:"milestone"`
 		Comments  int         `json:"comments"`
 		CreatedAt time.Time   `json:"created_at"`
@@ -159,4 +154,24 @@ type GithubEvent struct {
 		Type              string `json:"type"`
 		SiteAdmin         bool   `json:"site_admin"`
 	} `json:"sender"`
+}
+
+func (g GithubEvent) GetAssigneeNames() []string {
+	ss := []string{}
+	for _, a := range g.Issue.Assignees {
+		ss = append(ss, a.Login)
+	}
+	return ss
+}
+
+type Label struct {
+	ID      int    `json:"id"`
+	URL     string `json:"url"`
+	Name    string `json:"name"`
+	Color   string `json:"color"`
+	Default bool   `json:"default"`
+}
+
+type assignee struct {
+	Login string `json:"login"`
 }
