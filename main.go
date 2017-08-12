@@ -45,9 +45,10 @@ type GithubNotificationHandler struct {
 }
 
 func (h GithubNotificationHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNoContent)
 	e := h.NotificationService.NotifyWithRequestBody(r.Body)
-	if e != nil {
+	if e == nil {
+		w.WriteHeader(http.StatusNoContent)
+	} else {
 		logger.Printf("%#v\n", e)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
