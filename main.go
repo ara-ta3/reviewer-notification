@@ -23,7 +23,11 @@ func main() {
 	if p == "" {
 		p = "80"
 	}
-	port := fmt.Sprintf(":%s", p)
+	logger.Printf("target labels: %#v\n", labels)
+	logger.Printf("port: %#v\n", p)
+	logger.Printf("slack channel id: %#v\n", slackChannel)
+	logger.Printf("account map: %#v\n", accountMap)
+
 	h := service.GithubNotificationHandler{
 		NotificationService: service.NewReviewerNotification(
 			slack.SlackClient{
@@ -38,7 +42,7 @@ func main() {
 		Logger: *logger,
 	}
 	http.Handle("/", h)
-	http.ListenAndServe(port, nil)
+	http.ListenAndServe(fmt.Sprintf(":%s", p), nil)
 }
 
 func parseAccountMap(s string) map[string]string {
