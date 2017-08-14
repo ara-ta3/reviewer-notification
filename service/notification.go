@@ -35,21 +35,32 @@ type ReviewerNotification struct {
 	accountMap map[string]string
 }
 
-func (n ReviewerNotification) NotifyWithRequestBody(body io.ReadCloser) error {
+func (n ReviewerNotification) NotifyWithRequestBody(body io.ReadCloser, event string) error {
 	// TODO token verification
 	bs, err := ioutil.ReadAll(body)
 	if err != nil {
 		return err
 	}
-	g := new(github.GithubEvent)
-	err = json.Unmarshal(bs, g)
-	if err != nil {
-		return err
+
+	if event == "issue" {
+		e := new(github.IssueEvent)
+		err = json.Unmarshal(bs, e)
+		if err != nil {
+			return err
+		}
+		return n.NotifyIssue(e)
+	} else if event == "pull_request" {
+		e := new(github.PullRequestEvent)
+		err = json.Unmarshal(bs, e)
+		if err != nil {
+			return err
+		}
+		return n.NotifyPullRequest(e)
 	}
-	return n.Notify(g)
+	return fmt.Errorf("notification for %s is not implemented", event)
 }
 
-func (n ReviewerNotification) Notify(g *github.GithubEvent) error {
+func (n ReviewerNotification) NotifyIssue(g *github.IssueEvent) error {
 	n.logger.Printf("Action: %s\n", g.Action)
 	if g.Action != "labeled" {
 		return nil
@@ -61,6 +72,21 @@ func (n ReviewerNotification) Notify(g *github.GithubEvent) error {
 	replaced := n.replaceAccountName(as)
 
 	t := fmt.Sprintf("<%s|%s>", g.Issue.HTMLURL, g.Issue.Title)
+	return n.s.Send(replaced, t, "Review Request!!")
+}
+
+func (n ReviewerNotification) NotifyPullRequest(e *github.PullRequestEvent) error {
+	n.logger.Printf("Action: %s\n", e.Action)
+	if e.Action != "labeled" {
+		return nil
+	}
+	if !Include(n.labels, e.Label.Name) {
+		return nil
+	}
+	as := e.GetAssigneeNames()
+	replaced := n.replaceAccountName(as)
+
+	t := fmt.Sprintf("<%s|%s>", e.PullRequest.HTMLURL, e.PullRequest.Title)
 	return n.s.Send(replaced, t, "Review Request!!")
 }
 
