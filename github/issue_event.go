@@ -156,7 +156,7 @@ type IssueEvent struct {
 	} `json:"sender"`
 }
 
-func (g GithubEvent) GetAssigneeNames() []string {
+func (g IssueEvent) GetAssigneeNames() []string {
 	ss := []string{}
 	for _, a := range g.Issue.Assignees {
 		ss = append(ss, a.Login)

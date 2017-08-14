@@ -11,8 +11,8 @@ type GithubNotificationHandler struct {
 }
 
 func (h GithubNotificationHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	h := r.Header.Get("X-Hub-Signature")
-	e := h.NotificationService.NotifyWithRequestBody(r.Body, h)
+	event := r.Header.Get("X-GitHub-Event")
+	e := h.NotificationService.NotifyWithRequestBody(r.Body, event)
 	if e == nil {
 		w.WriteHeader(http.StatusNoContent)
 	} else {
