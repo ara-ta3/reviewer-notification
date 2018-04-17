@@ -9,6 +9,7 @@ import (
 
 	"github.com/ara-ta3/reviewer-notification/service"
 	"github.com/ara-ta3/reviewer-notification/slack"
+	"encoding/json"
 )
 
 var logger = log.New(os.Stdout, "", log.Ldate+log.Ltime+log.Lshortfile)
@@ -39,6 +40,17 @@ func main() {
 		Logger: *logger,
 	}
 	http.Handle("/", h)
+	http.HandleFunc("/accounts", func(res http.ResponseWriter, req *http.Request) {
+		j, e := json.Marshal(accountMap)
+		res.Header().Set("Content-Type", "application/json")
+		if e != nil {
+			res.WriteHeader(500)
+			logger.Printf("%#v\n", e)
+			return
+		}
+		res.WriteHeader(200)
+		res.Write(j)
+	})
 	http.ListenAndServe(fmt.Sprintf(":%s", p), nil)
 }
 
@@ -50,7 +62,8 @@ func parseAccountMap(s string) map[string]string {
 			continue
 		}
 		x := strings.Split(m, ":")
-		r[x[0]] = x[1]
+		key := strings.TrimSpace(x[0])
+		r[key] = x[1]
 	}
 	return r
 }

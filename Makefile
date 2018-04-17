@@ -14,6 +14,9 @@ host=localhost
 path=
 url=http://$(host):$(port)/$(path)
 
+install: $(GOVENDOR)
+	$< sync
+
 run/binary: build_for_local
 	./$(out)
 
