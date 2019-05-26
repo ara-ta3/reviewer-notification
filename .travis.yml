@@ -1,10 +1,14 @@
 language: go
-
 go:
-    - 1.11
-
+- 1.11
 install:
-    - env GO111MODULE=on make install
-
+- env GO111MODULE=on make install
 script:
-    - env GO111MODULE=on make build_for_local
+- env GO111MODULE=on make build_for_local
+deploy:
+  provider: heroku
+  api_key:
+    secure: GO2XTLi/Jz1v7oUWSr8gSUfXFRIo1BqW8uUvZYxgOBDZBE58PldavYohKvTEITayu01PxuVKARDSAacZgV9Zwa5zSKEkDQbDbMOCy5MJLG/avod0ua/zgxMAO11aOo4liT1fR+nbXDnhDgZhaYZTXMM4l8Jr+s5kp+u+JBxrT213YfL/FNJxriUY0do4J872q8ybgIIjY+YMOki9w5yQQji79N0u+fpDmUJc6Ike1YaPCBM44695R3hYCQGvOVF3Ty8xJQVGVc7rIgtgCwESOzKl25f5PKEX9wlVjwUDXVEK+MpgVmbt7Gsn2QdBTC9fJnKYfv4QTA1+ss+/6EvzoaHXnqsVV6nQYFmaADtT+dynP4XEGdkzJ4BwjcdU/VIYHG2gRcirfvmR2CHemoqgSiqSX2f6JTjd7fzgl/4oe+Ze0aws5ij4c3r3KsUIwLWSvh8ZIu+QLmzAsvMV7kRgkg+G/8AVGV3x8bRdu8jCrabCJc9J8k47iH41N5FWTcIpoWjbK06182jYM4sHMou3FP/e/Af1UK64DozwQJx9sJTL6dUwOVHyTwokbGchRZjNNrvn60XbJ7hy+NyxSmFBl4kNcFiG/z/l91T3jvOqhB9+VeDppAjDt9VxUq25sqLNOnedjaJb5IiUI8FC+04j1SWk5bVzZeaRqroq7RFu2wg=
+  app: reviewer-notification
+  on:
+    repo: ara-ta3/reviewer-notification
