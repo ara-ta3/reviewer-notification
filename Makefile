@@ -1,4 +1,4 @@
-GOVENDOR=$(shell go env GOPATH)/bin/govendor
+GO=go
 HEROKU=$(shell which heroku)
 goos_opt=GOOS=$(GOOS)
 goarch_opt=GOARCH=$(GOARCH)
@@ -14,8 +14,8 @@ host=localhost
 path=
 url=http://$(host):$(port)/$(path)
 
-install: $(GOVENDOR)
-	$< sync
+install:
+	$(GO) mod vendor
 
 run/binary: build_for_local
 	./$(out)
@@ -28,10 +28,6 @@ run:
 		SLACK_CHANNEL=$(post_to_channel) \
 		PORT=$(port) \
 		go run main.go
-
-dep=
-vendor/fetch: $(GOVENDOR)
-	$(GOVENDOR) fetch $(dep)
 
 curl:
 	curl -i $(url)
@@ -53,6 +49,3 @@ deploy:
 
 open: 
 	$(HEROKU) open
-
-$(GOVENDOR):
-	go get -u github.com/kardianos/govendor
