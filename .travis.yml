@@ -1,0 +1,10 @@
+language: go
+
+go:
+    - 1.11
+
+install:
+    - env GO111MODULE=on make install
+
+script:
+    - env GO111MODULE=on make build_for_local
