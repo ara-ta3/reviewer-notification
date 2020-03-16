@@ -15,7 +15,7 @@ reviewer notification
 https://your-app-name.herokuapp.com/
 ```
 
-**Content type*  
+**Content type**  
 
 ```
 application/json
