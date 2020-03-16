@@ -9,6 +9,10 @@ reviewer notification
 
 ## Github Webhooks
 
+https://github.com/ara-ta3/reviewer-notification/settings/hooks  
+
+Please switch repository name appropriately.  
+
 **Payload URL**
 
 ```
