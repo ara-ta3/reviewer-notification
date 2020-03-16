@@ -25,7 +25,7 @@ https://your-app-name.herokuapp.com/
 application/json
 ```
 
-*Which events would you like to trigger this webhook?*  
+**Which events would you like to trigger this webhook?**  
 
 Let me select individual events.  
 
