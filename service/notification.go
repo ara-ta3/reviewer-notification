@@ -72,7 +72,7 @@ func (n ReviewerNotification) Assign(g *github.PullRequestEvent) error {
 	as := g.GetAssigneeNames()
 	return n.githubService.Assign(
 		as,
-		string(g.Repository.Owner.ID),
+		string(g.Repository.Owner.Login),
 		g.Repository.Name,
 		g.PullRequest.Number,
 	)
