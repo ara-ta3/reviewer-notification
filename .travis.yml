@@ -1,8 +1,6 @@
 language: go
 go:
 - 1.11
-install:
-- make install
 script:
 - make build_for_local
 notifications:
