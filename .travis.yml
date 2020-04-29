@@ -1,8 +1,8 @@
 language: go
 go:
-- 1.11
+- 1.14
 install:
-- make install
+- go mod download
 script:
 - make build_for_local
 notifications:
