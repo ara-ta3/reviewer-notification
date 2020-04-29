@@ -59,8 +59,7 @@ func (n ReviewerNotification) NotifyWithRequestBody(body io.ReadCloser, event st
 			return err
 		}
 		err := n.NotifyPullRequest(e)
-
-		if err != nil {
+		if n.githubService == nil || err != nil {
 			return err
 		}
 
