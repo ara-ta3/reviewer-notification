@@ -2,7 +2,7 @@ language: go
 go:
 - 1.11
 install:
-- go mod download
+- env GO111MODULE=on go mod download
 script:
 - make build_for_local
 notifications:
