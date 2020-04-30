@@ -2,15 +2,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/ara-ta3/reviewer-notification/github"
 	"log"
 	"net/http"
 	"os"
 	"strings"
 
-	"encoding/json"
 	"github.com/ara-ta3/reviewer-notification/service"
 	"github.com/ara-ta3/reviewer-notification/slack"
+	"encoding/json"
 )
 
 var logger = log.New(os.Stdout, "", log.Ldate+log.Ltime+log.Lshortfile)
@@ -22,7 +21,6 @@ func main() {
 	p := os.Getenv("PORT")
 	accountMap := parseAccountMap(os.Getenv("ACCOUNT_MAP"))
 	slackChannel := os.Getenv("SLACK_CHANNEL")
-	githubToken := os.Getenv("GITHUB_TOKEN")
 	if p == "" {
 		p = "80"
 	}
@@ -38,7 +36,6 @@ func main() {
 			labels,
 			logger,
 			accountMap,
-			github.NewGithubService(githubToken),
 		),
 		Logger: *logger,
 	}
