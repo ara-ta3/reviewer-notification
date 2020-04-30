@@ -69,13 +69,30 @@ func (n ReviewerNotification) NotifyWithRequestBody(body io.ReadCloser, event st
 }
 
 func (n ReviewerNotification) Assign(g *github.PullRequestEvent) error {
-	as := g.GetAssigneeNames()
+	as := assignees(g)
+	if as == nil {
+		return nil
+	}
 	return n.githubService.Assign(
 		as,
-		string(g.Repository.Owner.Login),
+		g.Repository.Owner.Login,
 		g.Repository.Name,
 		g.PullRequest.Number,
 	)
+}
+
+func assignees(g *github.PullRequestEvent) []string {
+	as := g.GetAssigneeNames()
+	var ret []string
+
+	for _, a := range as {
+		if a == g.PullRequest.User.Login {
+			continue
+		}
+
+		ret = append(ret, a)
+	}
+	return ret
 }
 
 func (n ReviewerNotification) NotifyIssue(g *github.IssueEvent) error {
