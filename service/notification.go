@@ -85,6 +85,8 @@ func assignees(g *github.PullRequestEvent) []string {
 	as := g.GetAssigneeNames()
 	var ret []string
 
+	fmt.Printf("%+v\n", as)
+	fmt.Printf("%+v\n", g.PullRequest.User)
 	for _, a := range as {
 		if a == g.PullRequest.User.Login {
 			continue
