@@ -17,22 +17,25 @@ func NewReviewerNotification(
 	labels []string,
 	logger *log.Logger,
 	accountMap map[string]string,
+	service *github.Service,
 ) ReviewerNotification {
 	return ReviewerNotification{
-		s:          client,
-		token:      token,
-		labels:     labels,
-		logger:     *logger,
-		accountMap: accountMap,
+		s:             client,
+		token:         token,
+		labels:        labels,
+		logger:        *logger,
+		accountMap:    accountMap,
+		githubService: service,
 	}
 }
 
 type ReviewerNotification struct {
-	s          slack.SlackClient
-	token      string
-	labels     []string
-	logger     log.Logger
-	accountMap map[string]string
+	s             slack.SlackClient
+	token         string
+	labels        []string
+	logger        log.Logger
+	accountMap    map[string]string
+	githubService *github.Service
 }
 
 func (n ReviewerNotification) NotifyWithRequestBody(body io.ReadCloser, event string) error {
@@ -55,9 +58,41 @@ func (n ReviewerNotification) NotifyWithRequestBody(body io.ReadCloser, event st
 		if err != nil {
 			return err
 		}
-		return n.NotifyPullRequest(e)
+		err := n.NotifyPullRequest(e)
+		if n.githubService == nil || err != nil {
+			return err
+		}
+
+		return n.Assign(e)
 	}
 	return fmt.Errorf("notification for %s is not implemented", event)
+}
+
+func (n ReviewerNotification) Assign(g *github.PullRequestEvent) error {
+	as := assignees(g)
+	if as == nil {
+		return nil
+	}
+	return n.githubService.Assign(
+		as,
+		g.Repository.Owner.Login,
+		g.Repository.Name,
+		g.PullRequest.Number,
+	)
+}
+
+func assignees(g *github.PullRequestEvent) []string {
+	as := g.GetAssigneeNames()
+	var ret []string
+
+	for _, a := range as {
+		if a == g.PullRequest.User.Login {
+			continue
+		}
+
+		ret = append(ret, a)
+	}
+	return ret
 }
 
 func (n ReviewerNotification) NotifyIssue(g *github.IssueEvent) error {
